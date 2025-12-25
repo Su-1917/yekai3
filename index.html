@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday & New Year Odyssey | 2025-2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;400;600&family=Playfair+Display:ital,wght@0,400;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --tiffany: #0abab5; --pink: #ff69b4; --gold: #ffd700; --red: #ff4d4d;
+            --c1: var(--tiffany); --c2: var(--pink); --c3: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.12);
+        }
+
+        /* --- 性能与渲染优化 --- */
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            -webkit-font-smoothing: antialiased; 
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        
+        body { 
+            background-color: #000; color: white; font-family: 'Inter', sans-serif; 
+            overflow-x: hidden; height: 300vh; 
+            overscroll-behavior: none;
+        }
+
+        /* --- 1. 开屏检测 --- */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 100000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            transform: translate3d(0,0,0);
+        }
+        .scan-line { 
+            width: 250px; height: 1px; background: var(--tiffany); margin: 30px 0; 
+            box-shadow: 0 0 20px var(--tiffany); 
+            animation: scan 2s infinite ease-in-out; 
+            will-change: transform, opacity;
+        }
+        @keyframes scan { 0%, 100% { transform: translateY(-30px); opacity: 0; } 50% { transform: translateY(30px); opacity: 1; } }
+
+        /* --- 2. 极速流变背景 --- */
+        .bg-canvas { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
+            background: #000; overflow: hidden; 
+            transform: translate3d(0,0,0);
+        }
+        .orb { 
+            position: absolute; width: 130vw; height: 130vw; border-radius: 50%; 
+            filter: blur(100px); opacity: 0.6; mix-blend-mode: screen; 
+            will-change: transform; 
+            transform: translate3d(0,0,0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+            transition: opacity 2s; 
+        }
+        .orb-1 { background: radial-gradient(circle, var(--c1) 0%, transparent 70%); top: -40%; left: -30%; }
+        .orb-2 { background: radial-gradient(circle, var(--c2) 0%, transparent 70%); bottom: -40%; right: -30%; }
+        .orb-3 { background: radial-gradient(circle, var(--c3) 0%, transparent 70%); top: 10%; left: 10%; }
+
+        /* --- 3. 按钮 --- */
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 22px 60px; border-radius: 50px;
+            font-size: 0.9rem; letter-spacing: 4px; font-weight: 600; cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-transform: uppercase;
+            transform: translateZ(0);
+        }
+        .btn-glass:hover { background: #fff; color: #000; transform: translateY(-3px) translateZ(0); }
+
+        /* --- 4. 布局 --- */
+        .section { height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center; padding: 40px; text-align: center; }
+        #time-display { font-size: 7.5rem; font-weight: 100; letter-spacing: -5px; font-variant-numeric: tabular-nums; }
+        #date-display { letter-spacing: 10px; opacity: 0.5; margin-bottom: 10px; }
+
+        .hub-grid { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 450px; }
+        .btn-hub {
+            background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid var(--border);
+            padding: 35px; border-radius: 30px; color: #fff; cursor: pointer; transition: 0.4s;
+            transform: translate3d(0,0,0);
+        }
+        .btn-hub:hover { border-color: #fff; transform: scale(1.02) translate3d(0,0,0); background: rgba(255,255,255,0.08); }
+        .btn-hub h4 { font-family: 'Playfair Display'; font-size: 1.8rem; font-style: italic; letter-spacing: 2px; }
+
+        /* --- 5. 蛋糕 --- */
+        .cake-container { 
+            position: relative; width: 320px; height: 320px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end; 
+            transform: translate3d(0,0,0);
+        }
+        .cake-top { width: 200px; height: 75px; background: rgba(255,255,255,0.2); border: 1px solid var(--border); border-radius: 50%; margin: 0 auto; position: relative; z-index: 10; }
+        .cake-side { 
+            width: 200px; height: 110px; background: linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.02)); 
+            border-left: 1px solid var(--border); border-right: 1px solid var(--border); 
+            margin: -38px auto 0; position: relative; z-index: 9; display: flex; justify-content: center; align-items: center; 
+        }
+        .cake-num { font-family: 'Playfair Display'; font-size: 5.5rem; font-weight: 600; color: #fff; text-shadow: 0 0 25px rgba(255,255,255,0.8); }
+        .cake-bottom { width: 200px; height: 75px; background: rgba(255,255,255,0.08); border: 1px solid var(--border); border-radius: 50%; margin: -38px auto 0; position: relative; z-index: 8; }
+        .candle { width: 12px; height: 60px; background: #fff; border-radius: 6px; position: absolute; top: -35px; left: 50%; transform: translateX(-50%); z-index: 15; }
+        .flame { 
+            width: 26px; height: 40px; background: #fff; border-radius: 50% 50% 20% 20%; 
+            position: absolute; left: 50%; top: -48px; transform: translateX(-50%); 
+            filter: blur(4px); box-shadow: 0 0 40px #fff; 
+            animation: flicker 0.1s infinite alternate;
+            will-change: transform, opacity; 
+        }
+
+        /* --- 6. 愿望 & 透视层 --- */
+        .overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
+            z-index: 50000; display: none; opacity: 0; padding: 40px; overflow-y: auto; 
+            transform: translate3d(0,0,0);
+        }
+        #anim-stage {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 50001;
+            display: flex; justify-content: center; align-items: center;
+        }
+        #overlay-content { opacity: 0; transition: opacity 0.5s; }
+
+        #wish-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(60px); -webkit-backdrop-filter: blur(60px);
+            z-index: 90000; display: none; opacity: 0;
+            justify-content: center; align-items: center; flex-direction: column;
+            transform: translate3d(0,0,0);
+        }
+        #wish-input {
+            background: none; border: none; border-bottom: 2px solid #fff;
+            color: #fff; font-size: 4rem; width: 80%; max-width: 1000px;
+            text-align: center; padding: 20px; margin-bottom: 60px;
+            font-family: 'Playfair Display'; font-weight: 100; outline: none;
+        }
+
+        #finale-wrapper { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; opacity: 0; width: 100%; height: 100%; }
+        .hbd-text { 
+            font-family: 'Playfair Display'; font-size: 6rem; font-style: italic; margin-bottom: 20px; 
+            background: linear-gradient(to right, var(--c1), var(--c2)); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+        }
+
+        .music-player { 
+            position: fixed; bottom: 35px; left: 35px; z-index: 80000; 
+            background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); 
+            padding: 12px 25px; border-radius: 50px; display: flex; align-items: center; gap: 15px; 
+            cursor: pointer; transform: translate3d(0,0,0);
+        }
+        .disc { 
+            width: 30px; height: 30px; background: linear-gradient(45deg, var(--tiffany), var(--pink)); 
+            border-radius: 50%; animation: rotate 4s linear infinite; animation-play-state: paused; 
+            will-change: transform;
+        }
+        .playing .disc { animation-play-state: running; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes flicker { from { transform: translateX(-50%) scale(1); opacity: 0.8; } to { transform: translateX(-50%) scale(1.1); opacity: 1; } }
+
+        /* --- 7. 动画元素细节优化 (彻底修复穿模) --- */
+        .env-wrapper { position: relative; width: 300px; height: 200px; perspective: 1000px; }
+        .anim-envelope-back {
+            width: 100%; height: 100%; background: var(--c1); position: absolute;
+            border-radius: 0 0 10px 10px; z-index: 1; transition: background 0.5s;
+        }
+        /* 关键：前盖遮罩，只遮住信封下半部分，信纸必须从它和后壳中间升起 */
+        .anim-envelope-front {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+            background: var(--c1); border-radius: 0 0 10px 10px;
+            clip-path: polygon(0 35%, 100% 35%, 100% 100%, 0 100%); /* 留下上方开口 */
+            z-index: 3; filter: brightness(0.95);
+        }
+        /* 装饰用的信封线条 */
+        .anim-envelope-front:after {
+            content:''; position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+            border-left: 150px solid transparent; border-right: 150px solid transparent; border-bottom: 100px solid rgba(255,255,255,0.1);
+        }
+        .anim-flap {
+            position: absolute; top: 0; left: 0; width: 0; height: 0;
+            border-left: 150px solid transparent; border-right: 150px solid transparent; border-top: 110px solid var(--c1);
+            transform-origin: top; z-index: 4; transition: border-color 0.5s;
+        }
+        .anim-letter {
+            width: 260px; height: 180px; background: #fafafa; position: absolute; left: 20px; top: 10px;
+            z-index: 2; padding: 25px; color: #333; font-family: 'Playfair Display';
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 8px;
+        }
+
+        .anim-book { width: 220px; height: 300px; position: relative; perspective: 1500px; transform-style: preserve-3d; }
+        .anim-cover {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, var(--c1), var(--c2));
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 5px 15px 15px 5px;
+            transform-origin: left; z-index: 10; display: flex; justify-content: center; align-items: center;
+            font-family: 'Playfair Display'; font-size: 2.5rem; color: #fff;
+            box-shadow: 5px 5px 25px rgba(0,0,0,0.5); transition: background 0.5s;
+        }
+        .anim-page-stack {
+            position: absolute; top: 5px; left: 5px; width: 210px; height: 290px;
+            background: linear-gradient(to right, #eee, #fff); border-radius: 3px 12px 12px 3px; z-index: 5;
+        }
+
+        .anim-candle { 
+            width: 22px; height: 130px; background: linear-gradient(to bottom, var(--c2), var(--c1)); 
+            border-radius: 11px; position: relative; box-shadow: inset -5px 0 10px rgba(0,0,0,0.1); transition: background 0.5s;
+        }
+        .anim-flame { 
+            width: 45px; height: 65px; background: radial-gradient(#fff, #ff4d4d);
+            border-radius: 50% 50% 20% 20%; position: absolute; left: 50%; top: -75px; transform: translateX(-50%);
+            filter: blur(4px); box-shadow: 0 0 50px #ff4d4d; animation: flicker 0.1s infinite alternate;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="music-player" id="musicPlayer" onclick="toggleMusic()">
+        <div class="disc"></div>
+        <div style="font-size: 0.75rem; letter-spacing: 2px; font-weight: 200;">SYSTEM: <b>READY</b></div>
+        <audio id="bgMusic" loop><source src="music.mp3" type="audio/mpeg"></audio>
+    </div>
+
+    <div id="intro-screen">
+        <div style="font-size: 0.7rem; letter-spacing: 6px; opacity: 0.4;">BIOMETRIC VERIFICATION...</div>
+        <div class="scan-line"></div>
+        <div style="font-family: 'Playfair Display'; font-size: 3.5rem; margin-bottom: 40px;">Alex Zhang</div>
+        <button class="btn-glass" onclick="startJourney()">解锁 20 岁之旅</button>
+    </div>
+
+    <div class="bg-canvas">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <section class="section">
+        <div class="clock-container">
+            <div id="date-display">2025.12.30</div>
+            <div id="time-display">00:00:00</div>
+            <div id="day-of-week" style="letter-spacing: 15px; font-size: 0.8rem; color: var(--tiffany); margin-top: 15px;">TUESDAY</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="hub-grid">
+            <div class="btn-hub" onclick="openOverlay('memoirs')"><h4>Memoirs</h4><span>二十载时光纪</span></div>
+            <div class="btn-hub" onclick="openOverlay('messages')"><h4>Greetings</h4><span>好友寄语</span></div>
+            <div class="btn-hub" onclick="openOverlay('wishes')"><h4>Wishes</h4><span>愿望收集箱</span></div>
+        </div>
+    </section>
+
+    <section class="section" id="ceremony-sec">
+        <div id="ceremony-content">
+            <div class="cake-container">
+                <div class="cake-body">
+                    <div class="cake-top"><div class="candle"><div class="flame" id="flame"></div></div></div>
+                    <div class="cake-side"><div class="cake-num">20</div></div>
+                    <div class="cake-bottom"></div>
+                </div>
+            </div>
+            <div style="margin-top: 60px;"><button class="btn-glass" onclick="showWishScreen('birthday')">许下生日愿望</button></div>
+        </div>
+        
+        <div id="finale-wrapper">
+            <div class="hbd-text" id="final-title">Happy Birthday.</div>
+            <div id="final-subtitle" style="margin-bottom:40px; opacity:0.6; letter-spacing:5px;">祝你 20 岁的第一周，就是新年的开始</div>
+            
+            <div id="egg-zone" style="opacity: 0; transform: translateY(20px);">
+                <div style="font-size: 0.7rem; letter-spacing: 8px; margin-bottom: 20px; color: #FFFF00;">DETECTING NEW YEAR SIGNAL...</div>
+                <button class="btn-glass" style="border-color: #FFFF00; color: #FFFF00;" onclick="showWishScreen('newyear')">解锁新年愿望</button>
+            </div>
+
+            <div id="restart-zone" style="display: none; margin-top: 20px;">
+                <button class="btn-glass" onclick="location.reload()">RESTART JOURNEY</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="overlay" class="overlay">
+        <div style="position:fixed; top:40px; right:40px; cursor:pointer; opacity: 0.8; letter-spacing: 2px; z-index: 50002;" onclick="closeOverlay()">[ CLOSE ]</div>
+        <div id="anim-stage"></div>
+        <div id="overlay-content"></div>
+    </div>
+
+    <div id="wish-screen">
+        <h2 id="wish-title" style="font-weight: 100; letter-spacing: 15px; margin-bottom: 40px; opacity: 0.7;">MAKE A WISH</h2>
+        <input type="text" id="wish-input" placeholder="..." autocomplete="off">
+        <button class="btn-glass" id="wish-submit-btn">寄出愿望</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        gsap.ticker.fps(120); 
+        gsap.registerPlugin(ScrollTrigger);
+
+        let birthdayWishes = ["✨ 永远保持这份少年的热忱"];
+        let newYearWishes = ["🧧 2026 万事如意，岁岁平安"];
+
+        function updateClock() {
+            const now = new Date();
+            const weeks = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+            document.getElementById('date-display').innerText = `${now.getFullYear()}.${(now.getMonth()+1).toString().padStart(2,'0')}.${now.getDate().toString().padStart(2,'0')}`;
+            document.getElementById('time-display').innerText = now.toTimeString().split(' ')[0];
+            document.getElementById('day-of-week').innerText = weeks[now.getDay()];
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        const audio = document.getElementById('bgMusic');
+        const player = document.getElementById('musicPlayer');
+        function toggleMusic() {
+            if (audio.paused) { audio.play(); player.classList.add('playing'); } 
+            else { audio.pause(); player.classList.remove('playing'); }
+        }
+
+        function startJourney() {
+            gsap.to("#intro-screen", { opacity: 0, duration: 1, ease: "power2.inOut", onComplete: () => {
+                document.getElementById('intro-screen').style.display = 'none';
+                toggleMusic();
+            }});
+        }
+
+        const masterTl = gsap.timeline({ 
+            scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1.5 } 
+        });
+        masterTl
+            .to(":root", { "--c1": "#0abab5", "--c2": "#ff69b4", "--c3": "#7000ff" }, 0.3) 
+            .to(":root", { "--c1": "#7000ff", "--c2": "#0abab5", "--c3": "#ff69b4" }, 0.6)
+            .to(":root", { "--c1": "#0abab5", "--c2": "#7000ff", "--c3": "#ffffff" }, 1);
+
+        function moveOrbs() {
+            gsap.to(".orb-1", { x: "20%", y: "15%", duration: 6, repeat: -1, yoyo: true, ease: "sine.inOut" });
+            gsap.to(".orb-2", { x: "-15%", y: "-20%", duration: 5, repeat: -1, yoyo: true, ease: "sine.inOut" });
+        }
+        moveOrbs();
+
+        function triggerSalute(type) {
+            let colors = type === 'newyear' ? ['#FFD700', '#8B0000', '#FF4500', '#FFFFFF'] : ['#0abab5', '#ff69b4', '#7000ff', '#ffd700'];
+            let count = 0;
+            const interval = setInterval(() => {
+                confetti({ particleCount: 150, spread: 80, origin: { x: 0, y: 0.8 }, colors, angle: 60, startVelocity: 60 });
+                confetti({ particleCount: 150, spread: 80, origin: { x: 1, y: 0.8 }, colors, angle: 120, startVelocity: 60 });
+                count++; if(count >= (type==='newyear'?12:6)) clearInterval(interval);
+            }, 300);
+        }
+
+        function showWishScreen(type) {
+            const ws = document.getElementById('wish-screen');
+            const title = document.getElementById('wish-title');
+            const btn = document.getElementById('wish-submit-btn');
+            if(type === 'birthday') {
+                title.innerText = "MAKE A BIRTHDAY WISH";
+                title.style.color = "white";
+                btn.onclick = () => submitBirthdayWish();
+                gsap.to("#flame", { scale: 0, opacity: 0, duration: 0.8 });
+            } else {
+                title.innerText = "新年愿望";
+                title.style.color = "#FFFF00";
+                btn.onclick = () => submitNewYearWish();
+            }
+            ws.style.display = 'flex';
+            gsap.to(ws, { opacity: 1, duration: 0.8 });
+        }
+
+        function submitBirthdayWish() {
+            const val = document.getElementById('wish-input').value.trim();
+            if(val) birthdayWishes.unshift(`🎂 ${val}`);
+            gsap.to("#wish-screen", { opacity: 0, duration: 0.5, onComplete: () => {
+                document.getElementById('wish-screen').style.display = 'none';
+                document.getElementById('wish-input').value = "";
+                triggerSalute('birthday');
+                gsap.to("#ceremony-content", { opacity: 0, duration: 0.8, onComplete: () => {
+                    document.getElementById('ceremony-content').style.display = 'none';
+                    document.getElementById('finale-wrapper').style.display = 'flex';
+                    // 祝福跳出小动画
+                    gsap.fromTo("#final-title", { scale: 0.5, opacity: 0, y: 30 }, { scale: 1, opacity: 1, y: 0, duration: 1.2, ease: "back.out(1.7)" });
+                    gsap.to("#finale-wrapper", { opacity: 1, duration: 1 });
+                    setTimeout(() => { gsap.to("#egg-zone", { opacity: 1, y: 0, duration: 1 }); }, 2000);
+                }});
+            }});
+        }
+
+        function submitNewYearWish() {
+            const val = document.getElementById('wish-input').value.trim();
+            if(val) newYearWishes.unshift(`🧧 ${val}`);
+            gsap.to("#wish-screen", { opacity: 0, duration: 0.5, onComplete: () => {
+                document.getElementById('wish-screen').style.display = 'none';
+                ScrollTrigger.getAll().forEach(t => t.kill());
+                // 中国风金红背景切换
+                gsap.to(":root", { "--c1": "#8B0000", "--c2": "#FFD700", "--c3": "#FF4500", duration: 3 });
+                triggerSalute('newyear');
+                const title = document.getElementById('final-title');
+                title.innerHTML = "HAPPY BIRTHDAY<br><span>& HAPPY NEW YEAR</span>";
+                title.style.background = "linear-gradient(135deg, #FFFF00, #FF4500)";
+                title.style.webkitBackgroundClip = "text";
+                title.style.webkitTextFillColor = "transparent";
+                // 祝福跳出小动画
+                gsap.fromTo(title, { scale: 0.8, filter: "blur(10px)" }, { scale: 1, filter: "blur(0px)", duration: 1.5, ease: "elastic.out(1, 0.5)" });
+                document.getElementById('egg-zone').style.display = 'none';
+                document.getElementById('restart-zone').style.display = 'block';
+            }});
+        }
+
+        const animHTML = {
+            // 彻底重构信封结构，解决穿模
+            messages: `<div class="env-wrapper">
+                        <div class="anim-envelope-back"></div>
+                        <div class="anim-letter">
+                            <div style="font-size:0.6rem; opacity:0.3; margin-bottom:5px;">A LETTER FOR YOU</div>
+                            <div style="width:100%;height:2px;background:#ddd;"></div>
+                            <div style="width:100%;height:2px;background:#ddd;"></div>
+                            <div style="width:60%;height:2px;background:#ddd;"></div>
+                        </div>
+                        <div class="anim-envelope-front"></div>
+                        <div class="anim-flap"></div>
+                      </div>`,
+            memoirs: `<div class="anim-book"><div class="anim-page-stack"></div><div class="anim-cover">20</div></div>`,
+            wishes: `<div class="anim-candle"><div class="anim-flame"></div></div>`
+        };
+
+        const overlayData = {
+            memoirs: () => `<div style="display:flex; flex-direction:column; gap:30px; max-width:800px; margin:100px auto;"><div style="background:var(--glass-bg); padding:100px; text-align:center; border:1px solid var(--border); border-radius:40px;">[ 放入你的回忆照片 ]</div></div>`,
+            messages: () => `<div style="display:flex; flex-direction:column; gap:20px; max-width:800px; margin:100px auto;"><div style="background:var(--glass-bg); padding:40px; border-radius:30px; border:1px solid var(--border);">“20 岁，是告别过去，也是迎接未来的开始。”</div></div>`,
+            wishes: () => `<div style="display:flex; flex-direction:column; gap:20px; max-width:800px; margin:100px auto;">
+                    <h3 style="color:var(--pink); font-family:'Playfair Display';">Birthday Wishes</h3>
+                    ${birthdayWishes.map(w => `<div style="background:var(--glass-bg); padding:20px; border-radius:15px; border:1px solid var(--border);">${w}</div>`).join('')}
+                    <h3 style="color:#FFFF00; font-family:'Playfair Display'; margin-top:30px;">New Year Wishes</h3>
+                    ${newYearWishes.map(w => `<div style="background:var(--glass-bg); padding:20px; border-radius:15px; border:1px solid var(--border);">${w}</div>`).join('')}
+                </div>`
+        };
+
+        function openOverlay(type) {
+            const overlay = document.getElementById('overlay');
+            const stage = document.getElementById('anim-stage');
+            const content = document.getElementById('overlay-content');
+            content.style.opacity = '0';
+            content.innerHTML = overlayData[type]();
+            overlay.style.display = 'block';
+            gsap.to(overlay, { opacity: 1, duration: 0.5 });
+            stage.innerHTML = animHTML[type] || "";
+
+            const tl = gsap.timeline({ onComplete: () => {
+                gsap.to(stage.children, { opacity: 0, duration: 0.5, onComplete: () => stage.innerHTML = "" });
+                gsap.to(content, { opacity: 1, duration: 0.8 });
+            }});
+
+            if (type === 'messages') {
+                tl.from(".env-wrapper", { scale: 0, rotate: -5, duration: 0.7, ease: "back.out(1.7)" })
+                  .to(".anim-flap", { rotateX: 180, duration: 0.6, ease: "power2.inOut" })
+                  .to(".anim-letter", { 
+                      y: -140, 
+                      duration: 0.9, 
+                      ease: "power2.out",
+                      onStart: function() { 
+                          // 核心修复逻辑：在升起过程中，当纸张脱离信封开口，立即提升层级
+                          gsap.set(".anim-letter", { zIndex: 10 }); 
+                      } 
+                  }, "-=0.2");
+            } else if (type === 'memoirs') {
+                tl.from(".anim-book", { x: -100, opacity: 0, duration: 0.7, ease: "power2.out" })
+                  .to(".anim-cover", { rotateY: -155, duration: 1.2, ease: "power2.inOut" })
+                  .to(".anim-book", { scale: 1.2, opacity: 0, duration: 0.6 }, "-=0.2");
+            } else if (type === 'wishes') {
+                tl.from(".anim-candle", { y: 100, opacity: 0, duration: 0.6 })
+                  .from(".anim-flame", { scale: 0, duration: 0.4, ease: "back.out(2)" })
+                  .to(".anim-flame", { scale: 1.5, filter: "blur(10px)", opacity: 0, duration: 0.8, delay: 0.5 });
+            }
+        }
+
+        function closeOverlay() { 
+            gsap.to("#overlay", { opacity: 0, duration: 0.5, onComplete: () => {
+                document.getElementById('overlay').style.display = 'none';
+            }}); 
+        }
+    </script>
+</body>
+</html>
